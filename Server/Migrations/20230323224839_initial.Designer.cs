@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace BULB.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230321234728_INITAL")]
-    partial class INITAL
+    [Migration("20230323224839_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

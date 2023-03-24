@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using BULB.Server.Data;
 using BULB.Server.Models;
+using BULB.EF.Data;
+using BULB.Shared.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,15 @@ var connectionString = builder.Configuration.GetConnectionString("BULBConnection
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOracle(connectionString));
 
+
+var optionsBuilder = new DbContextOptionsBuilder<BULBOracleContext>();
+optionsBuilder.UseOracle(connectionString);
+
+builder.Services.AddSingleton(new OraTransMsgs((optionsBuilder.Options)));
+
+
+builder.Services.AddDbContext<BULBOracleContext>(options =>
+    options.UseOracle(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

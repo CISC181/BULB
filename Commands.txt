@@ -1,0 +1,10 @@
+Migration command:
+
+add-migration initial -Context ApplicationDbContext
+
+Update database command:
+
+Update-Database -Context ApplicationDbContext
+
+dbScaffold Command:
+Scaffold-DbContext "Data Source=3.80.81.224:1521/SPRING2023PDB;User ID=BULB;Password=BULBPW"Oracle.EntityFrameworkCore -OutputDir Models -ContextDir Data -Project "BULB.EF"  -Context "BULBOracleContext" -DataAnnotations -NoOnConfiguring -Force
