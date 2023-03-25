@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BULB.Client;
+using BULB.Client.Services.Core;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -14,5 +15,7 @@ builder.Services.AddHttpClient("BULB.ServerAPI", client => client.BaseAddress = 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BULB.ServerAPI"));
 
 builder.Services.AddApiAuthorization();
+
+builder.Services.AddScoped<CourseService>();
 
 await builder.Build().RunAsync();

@@ -4,11 +4,16 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Telerik.DataSource;
 using BULB.Shared.DTO;
 using BULB.EF.Models;
 using BULB.Shared;
 using System.Collections.Generic;
+using Telerik.Blazor.Components;
 using BULB.Shared.Utils;
+using Newtonsoft.Json;
+using BULB.Client.eNums;
+using BULB.Shared.Exceptions;
 
 
 namespace BULB.Client.Services.Common
@@ -45,5 +50,91 @@ namespace BULB.Client.Services.Common
 
         }
 
+        public async Task<NotificationModel> Post(E _Item)
+        {
+            string _ItemJson = JsonConvert.SerializeObject(_Item);
+
+            HttpResponseMessage response = await Http.PostAsJsonAsync($"{RestAPI}/Post{BaseObject}", _ItemJson);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var NotificationModel = MakeNotificationModel($"{BaseObject} Saved",
+                1000,
+                eNumTelerikThemeColor.success, "save");
+                return NotificationModel;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.ExpectationFailed)
+            {
+                //  I'm using 'ExpectionFailed' to pass back Oracle Errors
+                List<OraError> _ValidationResult = JsonConvert.DeserializeObject<List<OraError>>(response.Content.ReadAsStringAsync().Result);
+                throw new CustomOraException(_ValidationResult, response.StatusCode);
+            }
+
+            throw new Exception($"The service returned with status {response.StatusCode}");
+        }
+
+        public async Task<NotificationModel> Put(E _Item)
+        {
+            string _ItemJson = JsonConvert.SerializeObject(_Item);
+
+            HttpResponseMessage response = await Http.PutAsJsonAsync($"{RestAPI}/Put{BaseObject}", _ItemJson);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var NotificationModel = MakeNotificationModel($"{BaseObject} Saved",
+                1000,
+                eNumTelerikThemeColor.success, "save");
+                return NotificationModel;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.ExpectationFailed)
+            {
+                //  I'm using 'ExpectionFailed' to pass back Oracle Errors
+                List<OraError> _ValidationResult = JsonConvert.DeserializeObject<List<OraError>>(response.Content.ReadAsStringAsync().Result);
+                throw new CustomOraException(_ValidationResult, response.StatusCode);
+            }
+
+            throw new Exception($"The service returned with status {response.StatusCode}");
+        }
+
+        public async Task<NotificationModel> Delete(string _ID)
+        {
+            HttpResponseMessage response = await Http.DeleteAsync($"{RestAPI}/Delete{BaseObject}/{_ID}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var NotificationModel = MakeNotificationModel($"{BaseObject} Deleted",
+                1000,
+                eNumTelerikThemeColor.success, "save");
+                return NotificationModel;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.ExpectationFailed)
+            {
+                //  I'm using 'ExpectionFailed' to pass back Oracle Errors
+                List<OraError> _ValidationResult = JsonConvert.DeserializeObject<List<OraError>>(response.Content.ReadAsStringAsync().Result);
+                throw new CustomOraException(_ValidationResult, response.StatusCode);
+            }
+
+            throw new Exception($"The service returned with status {response.StatusCode}");
+        }
+
+
+
+
+        public NotificationModel MakeNotificationModel(string strNotificationText,
+            int Length,
+            eNumTelerikThemeColor eNumTelerikThemeColor,
+            string TelerikIcon = "gear")
+        {
+            var notif = new NotificationModel()
+            {
+                Icon = TelerikIcon, 
+                ShowIcon = true,
+                ThemeColor = enumUtil.GetDescription(eNumTelerikThemeColor),
+                Text = strNotificationText,
+                CloseAfter = Length,
+                Closable = Length == 0 ? true : false
+            };
+            return notif;
+        }
     }
 }
